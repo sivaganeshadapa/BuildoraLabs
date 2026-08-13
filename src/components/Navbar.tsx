@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Close menu when route changes
   useEffect(() => {
-    setIsOpen(false);
-  }, [location]);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-  // Prevent background scrolling when mobile menu is open
+  // Trap scroll when mobile menu is open
   useEffect(() => {
-    if (isOpen) {
+    if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -21,111 +24,123 @@ export default function Navbar() {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen]);
+  }, [isMobileMenuOpen]);
 
   const navLinks = [
-    { name: 'Services', path: '#services' },
-    { name: 'Work', path: '#work' },
-    { name: 'Process', path: '#process' },
-    { name: 'Technology', path: '#technology' },
-    { name: 'About', path: '#about' },
+    { name: 'Services', href: '#services' },
+    { name: 'Work', href: '#work' },
+    { name: 'Technology', href: '#technology' },
+    { name: 'Process', href: '#process' }
   ];
 
   return (
-    <nav style={{
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: 'var(--spacing-4) 0',
-      borderBottom: '1px solid var(--border-color)',
-      marginBottom: 'var(--spacing-10)',
-      position: 'relative',
-      zIndex: 50,
-      backgroundColor: 'var(--bg-color)'
-    }} className="container">
-      
-      <Link to="/" style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', zIndex: 51 }}>
-        Studio.
-      </Link>
-      
-      {/* Desktop Navigation */}
-      <div style={{ display: 'none', gap: '2rem', alignItems: 'center' }} className="desktop-nav">
-        {navLinks.map((link) => (
-          <a key={link.name} href={link.path} style={{ fontWeight: 500, fontSize: '0.95rem' }}>
-            {link.name}
-          </a>
-        ))}
-      </div>
-
-      <div style={{ display: 'none', alignItems: 'center' }} className="desktop-nav">
-        <a href="#contact" className="btn btn-primary">
-          Start a Project
-        </a>
-      </div>
-
-      {/* Mobile Menu Button */}
-      <button 
-        className="mobile-nav-toggle"
-        onClick={() => setIsOpen(!isOpen)}
+    <>
+      <header 
         style={{
-          background: 'none',
-          border: 'none',
-          color: 'var(--text-primary)',
-          cursor: 'pointer',
-          zIndex: 51,
-          padding: 'var(--spacing-2)'
+          position: 'fixed',
+          top: 0, left: 0, right: 0,
+          zIndex: 1000,
+          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          padding: isScrolled ? 'var(--spacing-3) 0' : 'var(--spacing-6) 0',
+          backgroundColor: isScrolled ? 'rgba(3, 3, 3, 0.8)' : 'transparent',
+          backdropFilter: isScrolled ? 'blur(12px)' : 'none',
+          WebkitBackdropFilter: isScrolled ? 'blur(12px)' : 'none',
+          borderBottom: isScrolled ? '1px solid rgba(255,255,255,0.05)' : '1px solid transparent'
         }}
-        aria-label={isOpen ? "Close menu" : "Open menu"}
-        aria-expanded={isOpen}
       >
-        {isOpen ? <X size={28} /> : <Menu size={28} />}
-      </button>
+        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          
+          <a href="#" style={{ fontSize: '1.25rem', fontWeight: 600, letterSpacing: '0.1em', color: 'var(--text-primary)', textDecoration: 'none' }}>
+            BUILDORA
+          </a>
+
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex" style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+            {navLinks.map(link => (
+              <a 
+                key={link.name} 
+                href={link.href}
+                style={{ 
+                  color: 'var(--text-secondary)', 
+                  textDecoration: 'none', 
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  transition: 'color var(--transition-fast)'
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
+              >
+                {link.name}
+              </a>
+            ))}
+            <a href="#contact" className="btn btn-primary" style={{ padding: '8px 24px', minHeight: '40px', fontSize: '0.875rem' }}>
+              Start a Project
+            </a>
+          </nav>
+
+          {/* Mobile Toggle */}
+          <button 
+            className="md:hidden"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            style={{ 
+              background: 'none', border: 'none', color: 'var(--text-primary)',
+              padding: '8px', zIndex: 1001, cursor: 'pointer' 
+            }}
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </header>
 
       {/* Mobile Menu Overlay */}
-      {isOpen && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'var(--bg-color)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 'var(--spacing-8)',
-          zIndex: 50,
-          padding: 'var(--spacing-6)'
-        }}>
-          {navLinks.map((link) => (
-            <a 
-              key={link.name} 
-              href={link.path} 
-              style={{ fontSize: '1.5rem', fontWeight: 600 }}
-              onClick={() => setIsOpen(false)}
-            >
-              {link.name}
-            </a>
-          ))}
-          <a 
-            href="#contact" 
-            className="btn btn-primary w-full" 
-            style={{ maxWidth: '300px', marginTop: 'var(--spacing-4)' }}
-            onClick={() => setIsOpen(false)}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            style={{
+              position: 'fixed',
+              top: 0, left: 0, right: 0, bottom: 0,
+              backgroundColor: 'var(--bg-color)',
+              zIndex: 999,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: 'var(--spacing-6)'
+            }}
           >
-            Start a Project
-          </a>
-        </div>
-      )}
-
-      {/* Embedded CSS for desktop/mobile toggling to avoid polluting global css */}
-      <style>{`
-        @media (min-width: 768px) {
-          .desktop-nav { display: flex !important; }
-          .mobile-nav-toggle { display: none !important; }
-        }
-      `}</style>
-    </nav>
+            <nav style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+              {navLinks.map(link => (
+                <a 
+                  key={link.name} 
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  style={{ 
+                    color: 'var(--text-primary)', 
+                    textDecoration: 'none', 
+                    fontSize: '2rem',
+                    fontWeight: 500,
+                  }}
+                >
+                  {link.name}
+                </a>
+              ))}
+              <a 
+                href="#contact" 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="btn btn-primary" 
+                style={{ width: '100%', marginTop: 'var(--spacing-8)' }}
+              >
+                Start a Project
+              </a>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

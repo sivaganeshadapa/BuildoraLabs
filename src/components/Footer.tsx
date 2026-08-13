@@ -1,80 +1,66 @@
-import { Link } from 'react-router-dom';
-
 export default function Footer() {
   return (
-    <footer style={{ borderTop: '1px solid var(--border-color)', padding: 'var(--spacing-16) 0 var(--spacing-8)', backgroundColor: 'var(--bg-color)' }}>
+    <footer style={{ backgroundColor: 'var(--bg-color)', borderTop: '1px solid var(--border-color)', paddingTop: 'var(--spacing-24)', paddingBottom: 'var(--spacing-10)' }}>
       <div className="container">
-        <div className="grid grid-cols-3" style={{ marginBottom: 'var(--spacing-16)' }}>
-          <div className="mb-lg" style={{ gridColumn: '1 / -1' }}>
-            <h3 style={{ marginBottom: 'var(--spacing-6)', color: 'var(--text-primary)' }}>Studio.</h3>
-            <p className="text-body-sm" style={{ maxWidth: '400px' }}>
-              We design and build practical digital products that help businesses launch, operate and grow.
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--spacing-10)' }}>
+            
+            {/* Brand */}
+            <div style={{ gridColumn: '1 / -1', marginBottom: 'var(--spacing-6)' }}>
+              <h2 style={{ fontSize: '1.5rem', letterSpacing: '0.1em', marginBottom: 'var(--spacing-2)' }}>BUILDORA LABS</h2>
+              <p className="text-body-sm" style={{ maxWidth: '300px' }}>
+                Transforming ideas into digital reality. A premium digital product engineering studio.
+              </p>
+            </div>
+
+            {/* Links */}
+            <div>
+              <h4 style={{ color: 'var(--text-primary)', marginBottom: 'var(--spacing-4)' }}>Company</h4>
+              <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
+                <li><a href="#services" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.875rem' }}>Services</a></li>
+                <li><a href="#work" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.875rem' }}>Work</a></li>
+                <li><a href="#process" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.875rem' }}>Process</a></li>
+                <li><a href="#technology" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.875rem' }}>Technology</a></li>
+                <li><a href="#about" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.875rem' }}>About</a></li>
+                <li><a href="#contact" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.875rem' }}>Contact</a></li>
+              </ul>
+            </div>
+
+            {/* Social */}
+            <div>
+              <h4 style={{ color: 'var(--text-primary)', marginBottom: 'var(--spacing-4)' }}>Connect</h4>
+              <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
+                <li><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.875rem' }}>LinkedIn</a></li>
+                <li><a href="https://github.com/sivaganeshadapa" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.875rem' }}>GitHub</a></li>
+              </ul>
+            </div>
+            
+            {/* Legal */}
+            <div>
+              <h4 style={{ color: 'var(--text-primary)', marginBottom: 'var(--spacing-4)' }}>Legal</h4>
+              <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
+                <li><a href="#" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.875rem' }}>Privacy Policy</a></li>
+                <li><a href="#" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.875rem' }}>Terms of Service</a></li>
+              </ul>
+            </div>
+
+          </div>
+
+          {/* Bottom */}
+          <div style={{ 
+            display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center',
+            paddingTop: 'var(--spacing-6)', borderTop: '1px solid var(--border-color)',
+            fontSize: '0.875rem', color: 'var(--text-tertiary)'
+          }}>
+            <p>&copy; {new Date().getFullYear()} Buildora Labs. All rights reserved.</p>
+            <p style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              Engineered with <span style={{ color: 'var(--text-secondary)' }}>precision</span>
             </p>
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
-            <h4 style={{ color: 'var(--text-primary)', marginBottom: 'var(--spacing-2)' }}>Company</h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }} className="text-body-sm">
-              <li><Link to="#about">About</Link></li>
-              <li><Link to="#services">Services</Link></li>
-              <li><Link to="#work">Projects</Link></li>
-              <li><Link to="#process">Process</Link></li>
-              <li><Link to="#contact">Contact</Link></li>
-            </ul>
-          </div>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
-            <h4 style={{ color: 'var(--text-primary)', marginBottom: 'var(--spacing-2)' }}>Technologies</h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }} className="text-body-sm">
-              <li>React & Next.js</li>
-              <li>Node.js</li>
-              <li>PostgreSQL</li>
-              <li>Supabase</li>
-              <li>Gemini AI</li>
-            </ul>
-          </div>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
-            <h4 style={{ color: 'var(--text-primary)', marginBottom: 'var(--spacing-2)' }}>Connect</h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }} className="text-body-sm">
-              <li><a href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-              <li><a href="#" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-              <li><a href="mailto:hello@studio.com">Email</a></li>
-              <li><a href="#">WhatsApp</a></li>
-            </ul>
-          </div>
-        </div>
-        
-        <div className="footer-bottom" style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          paddingTop: 'var(--spacing-6)', 
-          borderTop: '1px solid var(--border-color)', 
-          color: 'var(--text-secondary)' 
-        }}>
-          <p className="text-body-sm" style={{ margin: 0 }}>&copy; {new Date().getFullYear()} Studio. All rights reserved.</p>
-          <div style={{ display: 'flex', gap: 'var(--spacing-6)' }} className="text-body-sm">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-          </div>
         </div>
       </div>
-      
-      <style>{`
-        @media (min-width: 1024px) {
-          .grid > div:first-child {
-            grid-column: span 1 !important;
-          }
-        }
-        @media (max-width: 640px) {
-          .footer-bottom {
-            flex-direction: column;
-            gap: var(--spacing-4);
-            align-items: flex-start !important;
-          }
-        }
-      `}</style>
     </footer>
   );
 }

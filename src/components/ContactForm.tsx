@@ -1,166 +1,222 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { motion } from 'framer-motion';
 import { submitLead, uploadAttachment } from '../lib/supabase/queries';
-import { ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, AlertCircle, Paperclip } from 'lucide-react';
+import { fadeUp } from '../lib/animations';
 
 export default function ContactForm() {
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    projectType: 'website',
+    budget: '',
+    message: ''
+  });
+  
+  const [file, setFile] = useState<File | null>(null);
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(false);
+    setStatus('submitting');
+    setErrorMessage('');
 
-    const formData = new FormData(e.currentTarget);
-    
-    // Basic validation
-    const email = formData.get('email') as string;
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Please enter a valid email address.');
-      setLoading(false);
-      return;
-    }
-
-    const file = formData.get('attachment') as File;
-    
     try {
-      let attachment_url = null;
-      if (file && file.size > 0) {
-        attachment_url = await uploadAttachment(file);
+      let attachmentUrl = null;
+      if (file) {
+        attachmentUrl = await uploadAttachment(file);
       }
 
       await submitLead({
-        name: formData.get('name') as string,
-        email,
-        phone: formData.get('phone') as string,
-        company: formData.get('company') as string,
-        project_type: formData.get('project_type') as string,
-        budget: formData.get('budget') as string,
-        timeline: formData.get('timeline') as string,
-        description: formData.get('description') as string,
-        attachment_url,
+        name: formData.name,
+        email: formData.email,
+        project_type: formData.projectType,
+        budget: formData.budget,
+        description: formData.message,
+        attachment_url: attachmentUrl,
+        status: 'new'
       });
 
-      setSuccess(true);
-      (e.target as HTMLFormElement).reset();
+      setStatus('success');
+      setFormData({ name: '', email: '', projectType: 'website', budget: '', message: '' });
+      setFile(null);
     } catch (err: any) {
-      console.error(err);
-      setError('We encountered an issue submitting your request. Please try again or contact us directly.');
-    } finally {
-      setLoading(false);
+      console.error('Lead submission failed:', err);
+      setStatus('error');
+      setErrorMessage(err.message || 'Something went wrong. Please try again.');
     }
-  }
+  };
 
   return (
-    <section id="contact" className="section bg-secondary">
-      <div className="container" style={{ maxWidth: '800px' }}>
-        <div className="text-center mb-lg animate-fade-up">
-          <h2>Tell Us What You Want to Build</h2>
-          <p style={{ margin: '0 auto' }}>
-            Whether you have a one-page business website, a startup concept, a marketplace idea, or a complete business platform in mind, let's discuss what it would take to build it.
-          </p>
-        </div>
-
-        <div className="card animate-fade-up" style={{ animationDelay: '0.2s', padding: 'var(--spacing-6)' }}>
-          {success ? (
-            <div className="text-center" style={{ padding: 'var(--spacing-12) 0' }}>
-              <div style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(74, 222, 128, 0.1)', color: 'var(--success-color)', marginBottom: 'var(--spacing-6)' }}>
-                <CheckCircle size={32} />
-              </div>
-              <h3 style={{ color: 'var(--text-primary)' }}>Project request received.</h3>
-              <p style={{ marginBottom: 'var(--spacing-8)' }}>Thank you for reaching out. Our engineering team will review your requirements and contact you shortly.</p>
-              <button className="btn btn-secondary" onClick={() => setSuccess(false)}>
-                Submit another request
-              </button>
+    <section id="contact" className="section bg-secondary" style={{ borderTop: '1px solid var(--border-color)', position: 'relative' }}>
+      <div className="container">
+        <div className="grid grid-cols-2" style={{ alignItems: 'center' }}>
+          
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            style={{ paddingRight: 'var(--spacing-10)' }}
+          >
+            <h2 className="display" style={{ marginBottom: 'var(--spacing-6)' }}>Ready to build your next idea?</h2>
+            <p className="text-body-lg" style={{ marginBottom: 'var(--spacing-10)' }}>
+              Tell us what you're trying to build. We'll help you turn the idea into a practical, scalable digital product.
+            </p>
+            
+            <div style={{ display: 'flex', gap: 'var(--spacing-4)' }}>
+              <a href="#work" className="btn btn-secondary glass">Explore Our Work</a>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-6)' }}>
-              {error && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', padding: 'var(--spacing-4)', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: 'var(--error-color)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                  <AlertCircle size={20} />
-                  <span className="text-body-sm">{error}</span>
-                </div>
-              )}
-              
-              <div className="grid grid-cols-2">
-                <div className="form-group">
-                  <label htmlFor="name">Name *</label>
-                  <input type="text" id="name" name="name" required disabled={loading} placeholder="Jane Doe" />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="email">Email *</label>
-                  <input type="email" id="email" name="email" required disabled={loading} placeholder="jane@example.com" />
-                </div>
-              </div>
+          </motion.div>
 
-              <div className="grid grid-cols-2">
-                <div className="form-group">
-                  <label htmlFor="phone">Phone / WhatsApp</label>
-                  <input type="tel" id="phone" name="phone" disabled={loading} placeholder="+1 (555) 000-0000" />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="company">Company / Project Name</label>
-                  <input type="text" id="company" name="company" disabled={loading} placeholder="Acme Corp" />
-                </div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="card glass" 
+            style={{ padding: 'var(--spacing-10)' }}
+          >
+            {status === 'success' ? (
+              <div className="text-center" style={{ padding: 'var(--spacing-16) 0' }}>
+                <CheckCircle size={64} color="var(--success-color)" style={{ margin: '0 auto var(--spacing-6)' }} />
+                <h3>Project Request Received</h3>
+                <p className="text-body-sm" style={{ marginTop: 'var(--spacing-4)' }}>
+                  Thank you for reaching out. A Buildora Labs engineer will review your requirements and contact you within 24 hours.
+                </p>
+                <button 
+                  className="btn btn-secondary mt-xl" 
+                  onClick={() => setStatus('idle')}
+                >
+                  Submit Another Request
+                </button>
               </div>
-
-              <div className="grid grid-cols-2">
-                <div className="form-group">
-                  <label htmlFor="project_type">What are you looking to build?</label>
-                  <select id="project_type" name="project_type" disabled={loading}>
-                    <option value="Website">Website</option>
-                    <option value="Web App">Web App</option>
-                    <option value="MVP">MVP</option>
-                    <option value="SaaS">SaaS</option>
-                    <option value="E-commerce">E-commerce</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label htmlFor="budget">Approximate Budget</label>
-                  <select id="budget" name="budget" disabled={loading}>
-                    <option value="Not sure yet">Not sure yet</option>
-                    <option value="< $5k">&lt; $5k</option>
-                    <option value="$5k - $10k">$5k - $10k</option>
-                    <option value="$10k - $25k">$10k - $25k</option>
-                    <option value="$25k+">$25k+</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="timeline">Desired Timeline</label>
-                <select id="timeline" name="timeline" disabled={loading}>
-                  <option value="As soon as possible">As soon as possible</option>
-                  <option value="Within 1 month">Within 1 month</option>
-                  <option value="1-3 months">1-3 months</option>
-                  <option value="3+ months">3+ months</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="description">Project Details *</label>
-                <textarea id="description" name="description" rows={5} required disabled={loading} placeholder="Tell us about the problem you want to solve or the product you want to build..."></textarea>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="attachment">Attach Requirements (Optional)</label>
-                <input type="file" id="attachment" name="attachment" disabled={loading} style={{ padding: 'var(--spacing-2)', border: '1px dashed var(--border-color)', backgroundColor: 'transparent' }} />
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: 'var(--spacing-2)', marginBottom: 0 }}>PDF, DOCX, or ZIP files up to 10MB.</p>
-              </div>
-
-              <button type="submit" className="btn btn-primary w-full" disabled={loading} style={{ padding: 'var(--spacing-4)', marginTop: 'var(--spacing-4)' }}>
-                {loading ? 'Submitting Request...' : (
-                  <>Start a Conversation <ArrowRight size={18} style={{ marginLeft: 'var(--spacing-2)' }} /></>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                {status === 'error' && (
+                  <div style={{ 
+                    padding: 'var(--spacing-4)', backgroundColor: 'rgba(239, 68, 68, 0.1)', 
+                    border: '1px solid var(--error-color)', borderRadius: 'var(--radius-md)', 
+                    marginBottom: 'var(--spacing-6)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', color: 'var(--error-color)'
+                  }}>
+                    <AlertCircle size={20} />
+                    <span style={{ fontSize: '0.875rem' }}>{errorMessage}</span>
+                  </div>
                 )}
-              </button>
-            </form>
-          )}
+
+                <div className="form-group">
+                  <label htmlFor="name">Your Name</label>
+                  <input 
+                    type="text" 
+                    id="name" 
+                    required 
+                    placeholder="John Doe"
+                    value={formData.name}
+                    onChange={e => setFormData({...formData, name: e.target.value})}
+                    disabled={status === 'submitting'}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="email">Email Address</label>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    required 
+                    placeholder="john@company.com"
+                    value={formData.email}
+                    onChange={e => setFormData({...formData, email: e.target.value})}
+                    disabled={status === 'submitting'}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-4)' }}>
+                  <div className="form-group">
+                    <label htmlFor="projectType">Project Type</label>
+                    <select 
+                      id="projectType"
+                      value={formData.projectType}
+                      onChange={e => setFormData({...formData, projectType: e.target.value})}
+                      disabled={status === 'submitting'}
+                    >
+                      <option value="website">Website</option>
+                      <option value="webapp">Web Application</option>
+                      <option value="mvp">MVP Development</option>
+                      <option value="ai">AI Integration</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="budget">Estimated Budget</label>
+                    <select 
+                      id="budget"
+                      value={formData.budget}
+                      onChange={e => setFormData({...formData, budget: e.target.value})}
+                      disabled={status === 'submitting'}
+                    >
+                      <option value="">Select Budget...</option>
+                      <option value="<5k">Under $5k</option>
+                      <option value="5k-10k">$5k - $10k</option>
+                      <option value="10k-25k">$10k - $25k</option>
+                      <option value="25k+">$25k+</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="message">Project Details</label>
+                  <textarea 
+                    id="message" 
+                    required 
+                    rows={4} 
+                    placeholder="Tell us about your goals, timeline, and core features..."
+                    value={formData.message}
+                    onChange={e => setFormData({...formData, message: e.target.value})}
+                    disabled={status === 'submitting'}
+                    style={{ resize: 'vertical' }}
+                  ></textarea>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="attachment" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', padding: '12px', border: '1px dashed var(--border-color)', borderRadius: 'var(--radius-md)' }}>
+                    <Paperclip size={18} color="var(--text-secondary)" />
+                    <span style={{ color: 'var(--text-secondary)' }}>{file ? file.name : 'Attach brief or specs (optional)'}</span>
+                    <input 
+                      type="file" 
+                      id="attachment" 
+                      onChange={e => setFile(e.target.files?.[0] || null)}
+                      disabled={status === 'submitting'}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="btn btn-primary w-full"
+                  disabled={status === 'submitting'}
+                  style={{ marginTop: 'var(--spacing-4)' }}
+                >
+                  {status === 'submitting' ? 'Submitting...' : (
+                    <>Start Project <ArrowRight size={18} style={{ marginLeft: '8px' }} /></>
+                  )}
+                </button>
+              </form>
+            )}
+          </motion.div>
+
         </div>
       </div>
+      
+      {/* Background glow */}
+      <div style={{ 
+        position: 'absolute', bottom: 0, right: 0, width: '50vw', height: '50vw',
+        background: 'radial-gradient(circle, rgba(255,255,255,0.02) 0%, transparent 60%)',
+        pointerEvents: 'none', zIndex: 0
+      }} />
     </section>
   );
 }

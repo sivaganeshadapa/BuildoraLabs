@@ -1,73 +1,83 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import Services from '../components/Services';
+import Process from '../components/Process';
+import Technology from '../components/Technology';
 import Portfolio from '../components/Portfolio';
 import ContactForm from '../components/ContactForm';
-import { ArrowRight } from 'lucide-react';
+import Footer from '../components/Footer';
 
-export default function Home() {
-  // Simple intersection observer for scroll animations
+function CustomCursor() {
+  const [position, setPosition] = useState({ x: -100, y: -100 });
+  const [isHovering, setIsHovering] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('animate-fade-up');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
+    // Check if device supports hover
+    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+      setIsTouchDevice(true);
+      return;
+    }
 
-    document.querySelectorAll('.scroll-animate').forEach(el => {
-      // Remove class initially if we want to trigger it on scroll
-      el.classList.remove('animate-fade-up');
-      observer.observe(el);
-    });
+    const updatePosition = (e: MouseEvent) => {
+      setPosition({ x: e.clientX, y: e.clientY });
+    };
 
-    return () => observer.disconnect();
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName.toLowerCase() === 'a' || 
+          target.tagName.toLowerCase() === 'button' ||
+          target.closest('a') || 
+          target.closest('button')) {
+        setIsHovering(true);
+      } else {
+        setIsHovering(false);
+      }
+    };
+
+    window.addEventListener('mousemove', updatePosition);
+    window.addEventListener('mouseover', handleMouseOver);
+
+    return () => {
+      window.removeEventListener('mousemove', updatePosition);
+      window.removeEventListener('mouseover', handleMouseOver);
+    };
   }, []);
 
+  if (isTouchDevice) return null;
+
   return (
-    <div>
-      <Hero />
-      <Services />
-      
-      <section className="section text-center bg-color">
-        <div className="container scroll-animate" style={{ opacity: 0 }}>
-          <h2 style={{ marginBottom: 'var(--spacing-6)' }}>Modern Development. Real Engineering.</h2>
-          <p className="text-body-lg" style={{ margin: '0 auto var(--spacing-12)', maxWidth: '800px' }}>
-            We combine modern AI-assisted development tools with human engineering, architecture, testing and validation to create products that are not merely demos — they are built to work in the real world.
-          </p>
-          
-          <div className="process-flow card" style={{ padding: 'var(--spacing-10) var(--spacing-6)' }}>
-            <span style={{ fontSize: 'clamp(1rem, 2vw, 1.25rem)', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: 'var(--spacing-4)' }}>
-              <span>IDEA</span> 
-              <ArrowRight size={20} color="var(--text-tertiary)" className="flow-arrow" /> 
-              <span>PROTOTYPE</span> 
-              <ArrowRight size={20} color="var(--text-tertiary)" className="flow-arrow" /> 
-              <span>ARCHITECTURE</span> 
-              <ArrowRight size={20} color="var(--text-tertiary)" className="flow-arrow" /> 
-              <span>DEVELOPMENT</span> 
-              <ArrowRight size={20} color="var(--text-tertiary)" className="flow-arrow" /> 
-              <span>PRODUCTION</span>
-            </span>
-          </div>
-        </div>
-      </section>
+    <>
+      <div 
+        className="custom-cursor-dot" 
+        style={{ left: `${position.x}px`, top: `${position.y}px` }}
+      />
+      <div 
+        className={`custom-cursor-ring ${isHovering ? 'hovering' : ''}`}
+        style={{ 
+          left: `${position.x}px`, top: `${position.y}px`,
+          transition: 'width 0.2s, height 0.2s, background-color 0.2s' // Smooth hover transition, position instantly tracks
+        }}
+      />
+    </>
+  );
+}
 
-      <Portfolio />
-      <ContactForm />
-
-      <style>{`
-        @media (max-width: 768px) {
-          .process-flow span {
-            flex-direction: column;
-            gap: var(--spacing-4) !important;
-          }
-          .flow-arrow {
-            transform: rotate(90deg);
-          }
-        }
-      `}</style>
+export default function Home() {
+  return (
+    <div style={{ backgroundColor: 'var(--bg-color)' }}>
+      <CustomCursor />
+      <Navbar />
+      <main>
+        <Hero />
+        <Services />
+        <Portfolio />
+        <Process />
+        <Technology />
+        <ContactForm />
+      </main>
+      <Footer />
     </div>
   );
 }
