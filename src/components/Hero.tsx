@@ -1,138 +1,90 @@
-import { useState, useEffect, Suspense } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Canvas } from '@react-three/fiber';
-import HeroScene from './HeroScene';
-import { staggerContainer, fadeUp } from '../lib/animations';
+import WordsPullUp from './WordsPullUp';
 
 export default function Hero() {
-  const [loading, setLoading] = useState(true);
-
-  // Initial load sequence
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+  const navItems = ["Our story", "Collective", "Workshops", "Programs", "Inquiries"];
 
   return (
-    <>
-      {/* Loading Overlay */}
-      {loading && (
-        <motion.div 
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-          style={{
-            position: 'fixed',
-            top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'var(--bg-color)',
-            zIndex: 9999,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <motion.h1 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1 }}
-            style={{ color: 'var(--text-primary)', letterSpacing: '0.1em', fontSize: '1.5rem', fontWeight: 600 }}
-          >
-            BUILDORA LABS
-          </motion.h1>
-          <motion.div 
-            initial={{ width: 0 }}
-            animate={{ width: '200px' }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
-            style={{ height: '2px', backgroundColor: 'var(--text-primary)', marginTop: '2rem' }}
-          />
-        </motion.div>
-      )}
-
-      <section style={{ 
-        position: 'relative', 
-        height: '100vh', 
-        width: '100%', 
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingTop: 'var(--spacing-16)'
-      }}>
+    <section className="h-screen w-full p-4 md:p-6 bg-black relative">
+      <div className="w-full h-full rounded-2xl md:rounded-[2rem] overflow-hidden relative">
         
-        {/* 3D Canvas Background */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }}>
-          <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 8], fov: 45 }}>
-            <Suspense fallback={null}>
-              <HeroScene />
-            </Suspense>
-          </Canvas>
+        {/* Background Video */}
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          className="absolute inset-0 w-full h-full object-cover"
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260405_170732_8a9ccda6-5cff-4628-b164-059c500a2b41.mp4"
+        />
+        
+        {/* Overlays */}
+        <div className="absolute inset-0 noise-overlay opacity-[0.7] mix-blend-overlay pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 pointer-events-none"></div>
+
+        {/* Navbar Pill */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10">
+          <nav className="bg-black rounded-b-2xl md:rounded-b-3xl px-4 py-2 md:px-8 flex items-center justify-center gap-3 sm:gap-6 md:gap-12 lg:gap-14">
+            {navItems.map((item, idx) => (
+              <a 
+                key={idx} 
+                href="#" 
+                className="text-[10px] sm:text-xs md:text-sm font-medium transition-colors duration-200"
+                style={{ color: 'rgba(225, 224, 204, 0.8)' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#E1E0CC'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(225, 224, 204, 0.8)'}
+              >
+                {item}
+              </a>
+            ))}
+          </nav>
         </div>
 
-        {/* Content Overlay */}
-        <div className="container" style={{ position: 'relative', zIndex: 10, pointerEvents: 'none' }}>
-          <motion.div 
-            className="text-center"
-            variants={staggerContainer}
-            initial="hidden"
-            animate={!loading ? "visible" : "hidden"}
-          >
-            <motion.h1 className="display" variants={fadeUp} style={{ marginBottom: 'var(--spacing-6)', maxWidth: '1000px', margin: '0 auto var(--spacing-6)' }}>
-              You bring the idea.<br />
-              <span style={{ color: 'var(--text-secondary)' }}>We build the technology behind it.</span>
-            </motion.h1>
+        {/* Hero Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 lg:p-12 pb-6 md:pb-10">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-0 items-end">
             
-            <motion.p className="text-body-lg" variants={fadeUp} custom={1} style={{ margin: '0 auto var(--spacing-10)', maxWidth: '800px', pointerEvents: 'auto' }}>
-              We design and build premium websites, web applications, MVPs, AI-powered products and custom business platforms — from the first idea to production and beyond.
-            </motion.p>
+            {/* Giant Heading */}
+            <div className="md:col-span-8">
+              <WordsPullUp 
+                text="SILAVA" 
+                showAsterisk={true}
+                className="text-[26vw] sm:text-[24vw] md:text-[22vw] lg:text-[20vw] xl:text-[19vw] 2xl:text-[20vw] font-medium leading-[0.85] tracking-[-0.07em]" 
+                style={{ color: '#E1E0CC' }}
+              />
+            </div>
             
-            <motion.div variants={fadeUp} custom={2} className="hero-buttons" style={{ display: 'flex', gap: 'var(--spacing-4)', justifyContent: 'center', pointerEvents: 'auto' }}>
-              <a href="#contact" className="btn btn-primary" style={{ padding: 'var(--spacing-5) var(--spacing-10)' }}>
-                Start a Project
-              </a>
-              <a href="#work" className="btn btn-secondary" style={{ padding: 'var(--spacing-5) var(--spacing-10)' }}>
-                Explore Our Work
-              </a>
-            </motion.div>
-          </motion.div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: !loading ? 1 : 0 }}
-          transition={{ delay: 2, duration: 1 }}
-          style={{ position: 'absolute', bottom: 'var(--spacing-10)', left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}
-        >
-          <div style={{ width: '1px', height: '60px', backgroundColor: 'var(--border-color)', position: 'relative', overflow: 'hidden' }}>
-            <motion.div 
-              animate={{ y: [0, 60] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-              style={{ width: '1px', height: '30px', backgroundColor: 'var(--accent-color)', position: 'absolute', top: 0 }}
-            />
+            {/* Right side text and button */}
+            <div className="md:col-span-4 flex flex-col items-start md:items-end text-left md:text-right gap-6 md:gap-8 pb-2 md:pb-6">
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className="text-primary/70 text-xs sm:text-sm md:text-base max-w-sm leading-[1.2]"
+              >
+                SILAVA is a premium digital product engineering studio bound not by templates or shortcuts, but by a passion to build scalable, high-performance technology for visionary creators and startups.
+              </motion.p>
+              
+              <motion.button 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="group flex items-center gap-2 hover:gap-3 bg-primary rounded-full pl-6 pr-2 py-2 transition-all duration-300"
+              >
+                <span className="text-black font-medium text-sm sm:text-base pr-2 group-hover:pr-4 transition-all duration-300">Start a Project</span>
+                <div className="bg-black rounded-full w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                  <ArrowRight className="text-primary w-4 h-4 sm:w-5 sm:h-5" />
+                </div>
+              </motion.button>
+            </div>
+            
           </div>
-        </motion.div>
+        </div>
 
-        <style>{`
-          .hero-buttons {
-            flex-direction: column;
-          }
-          .hero-buttons .btn {
-            width: 100%;
-          }
-          @media (min-width: 640px) {
-            .hero-buttons {
-              flex-direction: row;
-            }
-            .hero-buttons .btn {
-              width: auto;
-              min-width: 200px;
-            }
-          }
-        `}</style>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

@@ -3,40 +3,25 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { getFeaturedProjects } from '../lib/supabase/queries';
 import type { Database } from '../lib/supabase/types';
 import { ExternalLink, Code } from 'lucide-react';
-import { fadeUp } from '../lib/animations';
 
 type Project = Database['public']['Tables']['projects']['Row'];
 
 function BrowserFrame({ url, children }: { url: string, children: React.ReactNode }) {
   return (
-    <div style={{
-      border: '1px solid var(--border-color)',
-      borderRadius: 'var(--radius-md)',
-      overflow: 'hidden',
-      backgroundColor: 'var(--bg-secondary)',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <div className="border border-[#333] rounded-xl overflow-hidden bg-[#101010] h-full flex flex-col">
       {/* Chrome Top Bar */}
-      <div style={{
-        display: 'flex', alignItems: 'center', padding: '12px 16px',
-        borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-tertiary)', gap: '12px'
-      }}>
-        <div style={{ display: 'flex', gap: '6px' }}>
-          <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '#ff5f56' }} />
-          <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '#ffbd2e' }} />
-          <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '#27c93f' }} />
+      <div className="flex items-center px-4 py-3 border-b border-[#333] bg-[#0a0a0a] gap-3">
+        <div className="flex gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
         </div>
-        <div style={{
-          flex: 1, backgroundColor: 'var(--bg-secondary)', padding: '4px 12px',
-          borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-secondary)', textAlign: 'center'
-        }}>
+        <div className="flex-1 bg-[#1a1a1a] px-3 py-1 rounded text-xs text-gray-500 text-center truncate">
           {url}
         </div>
       </div>
-      {/* Content area (Usually an iframe or image, but we'll use a placeholder for now since we don't have the screenshots) */}
-      <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-color)', overflow: 'hidden' }}>
+      {/* Content area */}
+      <div className="flex-1 relative flex items-center justify-center bg-black overflow-hidden">
         {children}
       </div>
     </div>
@@ -52,7 +37,6 @@ export default function Portfolio() {
     target: containerRef,
   });
 
-  // Calculate horizontal scroll for desktop
   const x = useTransform(scrollYProgress, [0, 1], ["0%", "-100%"]);
 
   useEffect(() => {
@@ -70,50 +54,49 @@ export default function Portfolio() {
   }, []);
 
   return (
-    <section id="work" style={{ backgroundColor: 'var(--bg-color)' }}>
-      {/* Header */}
-      <div className="container" style={{ paddingTop: 'var(--spacing-24)', paddingBottom: 'var(--spacing-16)' }}>
+    <section id="work" className="bg-black text-[#E1E0CC]">
+      <div className="max-w-[1600px] mx-auto px-6 pt-24 pb-16">
         <motion.div 
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          variants={fadeUp}
+          transition={{ duration: 0.8 }}
         >
-          <h2 className="display" style={{ marginBottom: 'var(--spacing-4)' }}>Work that actually works.</h2>
-          <p className="text-body-lg">Real products we've designed and built.</p>
+          <h2 className="text-4xl md:text-5xl lg:text-7xl font-medium tracking-tight mb-4 text-[#E1E0CC]">Work that actually works.</h2>
+          <p className="text-xl md:text-2xl text-gray-400 font-light">Real products we've engineered.</p>
         </motion.div>
       </div>
 
       {loading ? (
-        <div className="container pb-24">
-          <div className="grid grid-cols-2">
-            {[1, 2].map(i => <div key={i} className="skeleton" style={{ height: '500px' }} />)}
+        <div className="max-w-[1600px] mx-auto px-6 pb-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {[1, 2].map(i => <div key={i} className="bg-[#101010] animate-pulse rounded-2xl h-[500px]" />)}
           </div>
         </div>
       ) : (
         <>
           {/* Desktop Horizontal Scroll */}
-          <div className="hidden md:block" ref={containerRef} style={{ height: '300vh', position: 'relative' }}>
-            <div style={{ position: 'sticky', top: 0, height: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-              <motion.div style={{ x, display: 'flex', gap: 'var(--spacing-10)', padding: '0 var(--spacing-6)' }}>
+          <div className="hidden md:block relative h-[300vh]" ref={containerRef}>
+            <div className="sticky top-0 h-screen flex items-center overflow-hidden">
+              <motion.div style={{ x }} className="flex gap-16 px-12">
                 {projects.map((project, idx) => (
-                  <div key={project.id} style={{ width: '80vw', maxWidth: '1000px', height: '70vh', flexShrink: 0 }}>
-                    <div className="grid grid-cols-2" style={{ height: '100%', gap: 'var(--spacing-10)' }}>
+                  <div key={project.id} className="w-[80vw] max-w-[1000px] h-[70vh] shrink-0">
+                    <div className="grid grid-cols-2 h-full gap-16">
                       
                       {/* Project Details */}
-                      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                        <div style={{ color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: '0.1em', marginBottom: 'var(--spacing-4)' }}>
+                      <div className="flex flex-col justify-center">
+                        <div className="text-primary tracking-widest text-sm font-medium uppercase mb-6">
                           {String(idx + 1).padStart(2, '0')} — {project.category}
                         </div>
-                        <h3 className="display" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}>{project.title}</h3>
-                        <p className="text-body-lg" style={{ marginTop: 'var(--spacing-6)', marginBottom: 'var(--spacing-8)' }}>
+                        <h3 className="text-4xl lg:text-6xl font-medium tracking-tight text-[#E1E0CC] mb-6">{project.title}</h3>
+                        <p className="text-lg lg:text-xl text-gray-400 font-light mb-8 leading-relaxed">
                           {project.description}
                         </p>
                         
                         {project.technologies && (
-                          <div style={{ display: 'flex', gap: 'var(--spacing-3)', flexWrap: 'wrap', marginBottom: 'var(--spacing-8)' }}>
+                          <div className="flex gap-3 flex-wrap mb-10">
                             {project.technologies.map(tech => (
-                              <span key={tech} style={{ border: '1px solid var(--border-color)', padding: '4px 12px', borderRadius: '99px', fontSize: '0.875rem' }}>
+                              <span key={tech} className="border border-[#333] text-gray-300 px-4 py-1.5 rounded-full text-sm">
                                 {tech}
                               </span>
                             ))}
@@ -121,19 +104,19 @@ export default function Portfolio() {
                         )}
 
                         {project.live_url && (
-                          <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ alignSelf: 'flex-start' }}>
-                            View Live Product <ExternalLink size={18} style={{ marginLeft: '8px' }} />
+                          <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center self-start gap-2 border border-[#333] hover:border-[#666] hover:bg-[#111] px-6 py-3 rounded-full transition-all text-sm font-medium">
+                            View Live Product <ExternalLink size={16} />
                           </a>
                         )}
                       </div>
 
                       {/* Browser Mockup */}
-                      <div style={{ height: '100%', padding: 'var(--spacing-4) 0' }}>
-                        <BrowserFrame url={project.live_url || 'https://buildoralabs.com'}>
-                          <div style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: 'var(--spacing-6)' }}>
-                            <Code size={48} style={{ margin: '0 auto var(--spacing-4)', opacity: 0.2 }} />
-                            <p style={{ fontSize: '1.2rem', fontWeight: 600 }}>{project.title}</p>
-                            <p style={{ fontSize: '0.875rem' }}>Live Interface Preview</p>
+                      <div className="h-full py-4">
+                        <BrowserFrame url={project.live_url || 'https://silava.com'}>
+                          <div className="text-gray-600 text-center p-8">
+                            <Code size={48} className="mx-auto mb-4 opacity-20" />
+                            <p className="text-xl font-medium mb-1 text-gray-400">{project.title}</p>
+                            <p className="text-sm">Live Interface Preview</p>
                           </div>
                         </BrowserFrame>
                       </div>
@@ -146,7 +129,7 @@ export default function Portfolio() {
           </div>
 
           {/* Mobile Vertical Stack */}
-          <div className="md:hidden container pb-24" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
+          <div className="md:hidden max-w-[1600px] mx-auto px-6 pb-24 flex flex-col gap-20">
             {projects.map((project, idx) => (
               <motion.div 
                 key={project.id}
@@ -155,26 +138,26 @@ export default function Portfolio() {
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6 }}
               >
-                <div style={{ color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: '0.1em', marginBottom: 'var(--spacing-2)' }}>
+                <div className="text-primary tracking-widest text-xs font-medium uppercase mb-4">
                   {String(idx + 1).padStart(2, '0')} — {project.category}
                 </div>
-                <h3 style={{ fontSize: '2rem', marginBottom: 'var(--spacing-4)' }}>{project.title}</h3>
+                <h3 className="text-3xl font-medium text-[#E1E0CC] mb-6">{project.title}</h3>
                 
-                <div style={{ height: '300px', marginBottom: 'var(--spacing-6)' }}>
-                  <BrowserFrame url={project.live_url || 'https://buildoralabs.com'}>
-                     <div style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: 'var(--spacing-6)' }}>
-                        <Code size={40} style={{ margin: '0 auto var(--spacing-4)', opacity: 0.2 }} />
-                        <p style={{ fontSize: '1rem', fontWeight: 600 }}>{project.title}</p>
+                <div className="h-[300px] mb-8">
+                  <BrowserFrame url={project.live_url || 'https://silava.com'}>
+                     <div className="text-gray-600 text-center p-6">
+                        <Code size={40} className="mx-auto mb-4 opacity-20" />
+                        <p className="text-lg font-medium text-gray-400">{project.title}</p>
                       </div>
                   </BrowserFrame>
                 </div>
 
-                <p className="text-body-sm" style={{ marginBottom: 'var(--spacing-4)' }}>{project.description}</p>
+                <p className="text-gray-400 text-sm leading-relaxed mb-6">{project.description}</p>
                 
                 {project.technologies && (
-                  <div style={{ display: 'flex', gap: 'var(--spacing-2)', flexWrap: 'wrap', marginBottom: 'var(--spacing-6)' }}>
+                  <div className="flex gap-2 flex-wrap mb-8">
                     {project.technologies.slice(0, 3).map(tech => (
-                      <span key={tech} style={{ border: '1px solid var(--border-color)', padding: '2px 10px', borderRadius: '99px', fontSize: '0.75rem' }}>
+                      <span key={tech} className="border border-[#333] text-gray-300 px-3 py-1 rounded-full text-xs">
                         {tech}
                       </span>
                     ))}
@@ -182,8 +165,8 @@ export default function Portfolio() {
                 )}
                 
                 {project.live_url && (
-                  <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ width: '100%' }}>
-                    View Live <ExternalLink size={16} style={{ marginLeft: '8px' }} />
+                  <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 border border-[#333] bg-[#111] px-6 py-3 rounded-full text-sm font-medium">
+                    View Live <ExternalLink size={16} />
                   </a>
                 )}
               </motion.div>
@@ -191,19 +174,6 @@ export default function Portfolio() {
           </div>
         </>
       )}
-
-      <style>{`
-        .md\\:hidden { display: none; }
-        .hidden { display: none; }
-        @media (min-width: 768px) {
-          .md\\:hidden { display: none !important; }
-          .hidden.md\\:block { display: block !important; }
-        }
-        @media (max-width: 767px) {
-          .md\\:hidden { display: flex !important; }
-          .hidden.md\\:block { display: none !important; }
-        }
-      `}</style>
     </section>
   );
 }

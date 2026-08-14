@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
-import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
-import Services from '../components/Services';
-import Process from '../components/Process';
-import Technology from '../components/Technology';
+import About from '../components/About';
+import Features from '../components/Features';
 import Portfolio from '../components/Portfolio';
 import ContactForm from '../components/ContactForm';
 import Footer from '../components/Footer';
@@ -14,7 +12,6 @@ function CustomCursor() {
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   useEffect(() => {
-    // Check if device supports hover
     if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
       setIsTouchDevice(true);
       return;
@@ -55,10 +52,7 @@ function CustomCursor() {
       />
       <div 
         className={`custom-cursor-ring ${isHovering ? 'hovering' : ''}`}
-        style={{ 
-          left: `${position.x}px`, top: `${position.y}px`,
-          transition: 'width 0.2s, height 0.2s, background-color 0.2s' // Smooth hover transition, position instantly tracks
-        }}
+        style={{ left: `${position.x}px`, top: `${position.y}px` }}
       />
     </>
   );
@@ -66,16 +60,21 @@ function CustomCursor() {
 
 export default function Home() {
   return (
-    <div style={{ backgroundColor: 'var(--bg-color)' }}>
+    <div className="bg-black min-h-screen text-[#E1E0CC]">
       <CustomCursor />
-      <Navbar />
       <main>
         <Hero />
-        <Services />
-        <Portfolio />
-        <Process />
-        <Technology />
-        <ContactForm />
+        <About />
+        <Features />
+        
+        {/* We keep the dynamic Supabase components, wrapped to match theme if needed */}
+        <div className="bg-black py-12 relative z-20">
+          <Portfolio />
+        </div>
+        
+        <div className="bg-[#101010] py-12 relative z-20 rounded-t-[2rem]">
+          <ContactForm />
+        </div>
       </main>
       <Footer />
     </div>
