@@ -3,7 +3,11 @@ import { motion } from 'framer-motion';
 import WordsPullUp from './WordsPullUp';
 
 export default function Hero() {
-  const navItems = ["Our story", "Collective", "Workshops", "Programs", "Inquiries"];
+  const navItems = [
+    { name: "Work", href: "#work" },
+    { name: "About", href: "#about" },
+    { name: "Contact", href: "#contact" }
+  ];
 
   return (
     <section className="h-screen w-full p-4 md:p-6 bg-black relative">
@@ -29,13 +33,13 @@ export default function Hero() {
             {navItems.map((item, idx) => (
               <a 
                 key={idx} 
-                href="#" 
+                href={item.href} 
                 className="text-[10px] sm:text-xs md:text-sm font-medium transition-colors duration-200"
                 style={{ color: 'rgba(225, 224, 204, 0.8)' }}
                 onMouseEnter={e => e.currentTarget.style.color = '#E1E0CC'}
                 onMouseLeave={e => e.currentTarget.style.color = 'rgba(225, 224, 204, 0.8)'}
               >
-                {item}
+                {item.name}
               </a>
             ))}
           </nav>
@@ -67,7 +71,8 @@ export default function Hero() {
                 SILAVA is a premium digital product engineering studio bound not by templates or shortcuts, but by a passion to build scalable, high-performance technology for visionary creators and startups.
               </motion.p>
               
-              <motion.button 
+              <motion.a 
+                href="#contact"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -78,7 +83,7 @@ export default function Hero() {
                 <div className="bg-black rounded-full w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
                   <ArrowRight className="text-primary w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-              </motion.button>
+              </motion.a>
             </div>
             
           </div>
