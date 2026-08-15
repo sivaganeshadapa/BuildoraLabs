@@ -1,14 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { getFeaturedProjects } from '../lib/supabase/queries';
 import type { Database } from '../lib/supabase/types';
-import { ExternalLink, Code } from 'lucide-react';
+import { ExternalLink, Code, ChevronLeft, ChevronRight } from 'lucide-react';
 
 type Project = Database['public']['Tables']['projects']['Row'];
 
 function BrowserFrame({ url, children }: { url: string, children: React.ReactNode }) {
   return (
-    <div className="border border-[#333] rounded-xl overflow-hidden bg-[#101010] h-full flex flex-col">
+    <div className="border border-[#333] rounded-xl overflow-hidden bg-[#101010] h-full flex flex-col relative z-0">
       {/* Chrome Top Bar */}
       <div className="flex items-center px-4 py-3 border-b border-[#333] bg-[#0a0a0a] gap-3">
         <div className="flex gap-1.5">
@@ -21,7 +21,9 @@ function BrowserFrame({ url, children }: { url: string, children: React.ReactNod
         </div>
       </div>
       {/* Content area */}
-      <div className="flex-1 relative flex items-center justify-center bg-black overflow-hidden">
+      <div className="flex-1 relative flex items-center justify-center bg-black overflow-hidden group">
+        {/* Invisible overlay to prevent iframe scroll intercepting unless clicked */}
+        <div className="absolute inset-0 z-10 bg-transparent group-hover:pointer-events-none transition-all"></div>
         {children}
       </div>
     </div>
@@ -32,12 +34,19 @@ export default function Portfolio() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-  });
+  const carouselRef = useRef<HTMLDivElement>(null);
 
-  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-100%"]);
+  const scrollLeft = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: -window.innerWidth * 0.7, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: window.innerWidth * 0.7, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     async function loadProjects() {
@@ -55,7 +64,7 @@ export default function Portfolio() {
 
   return (
     <section id="work" className="bg-black text-[#E1E0CC]">
-      <div className="max-w-[1600px] mx-auto px-6 pt-24 pb-16">
+      <div className="max-w-[1600px] mx-auto px-6 pt-24 pb-8 md:pb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -65,6 +74,22 @@ export default function Portfolio() {
           <h2 className="text-4xl md:text-5xl lg:text-7xl font-medium tracking-tight mb-4 text-[#E1E0CC]">Work that actually works.</h2>
           <p className="text-xl md:text-2xl text-gray-400 font-light">Real products we've engineered.</p>
         </motion.div>
+        
+        {/* Desktop Carousel Controls */}
+        {!loading && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            className="hidden md:flex gap-4 pb-2"
+          >
+            <button onClick={scrollLeft} className="w-14 h-14 rounded-full border border-[#333] flex items-center justify-center hover:bg-[#111] hover:border-gray-400 transition-all text-[#E1E0CC]">
+              <ChevronLeft size={24} />
+            </button>
+            <button onClick={scrollRight} className="w-14 h-14 rounded-full border border-[#333] flex items-center justify-center hover:bg-[#111] hover:border-gray-400 transition-all text-[#E1E0CC]">
+              <ChevronRight size={24} />
+            </button>
+          </motion.div>
+        )}
       </div>
 
       {loading ? (
@@ -76,64 +101,74 @@ export default function Portfolio() {
       ) : (
         <>
           {/* Desktop Horizontal Scroll */}
-          <div className="hidden md:block relative h-[300vh]" ref={containerRef}>
-            <div className="sticky top-0 h-screen flex items-center overflow-hidden">
-              <motion.div style={{ x }} className="flex gap-16 px-12">
-                {projects.map((project, idx) => (
-                  <div key={project.id} className="w-[80vw] max-w-[1000px] h-[70vh] shrink-0">
-                    <div className="grid grid-cols-2 h-full gap-16">
+          <div className="hidden md:block w-full overflow-hidden mb-32">
+            <div 
+              ref={carouselRef}
+              className="flex gap-16 px-6 md:px-12 overflow-x-auto snap-x snap-mandatory pb-12"
+              style={{ scrollBehavior: 'smooth', msOverflowStyle: 'none', scrollbarWidth: 'none' }}
+            >
+              {/* This style block completely hides the scrollbar across browsers while keeping functionality */}
+              <style>{`
+                div::-webkit-scrollbar { display: none; }
+              `}</style>
+              
+              {projects.map((project, idx) => (
+                <div key={project.id} className="w-[85vw] max-w-[1100px] h-[65vh] shrink-0 snap-start">
+                  <div className="grid grid-cols-2 h-full gap-16">
+                    
+                    {/* Project Details */}
+                    <div className="flex flex-col justify-center">
+                      <div className="text-primary tracking-widest text-sm font-medium uppercase mb-6">
+                        {String(idx + 1).padStart(2, '0')} — {project.category}
+                      </div>
+                      <h3 className="text-4xl lg:text-5xl xl:text-6xl font-medium tracking-tight text-[#E1E0CC] mb-6">{project.title}</h3>
+                      <p className="text-lg lg:text-xl text-gray-400 font-light mb-8 leading-relaxed max-w-md">
+                        {project.description}
+                      </p>
                       
-                      {/* Project Details */}
-                      <div className="flex flex-col justify-center">
-                        <div className="text-primary tracking-widest text-sm font-medium uppercase mb-6">
-                          {String(idx + 1).padStart(2, '0')} — {project.category}
+                      {project.technologies && (
+                        <div className="flex gap-3 flex-wrap mb-10">
+                          {project.technologies.map(tech => (
+                            <span key={tech} className="border border-[#333] text-gray-300 px-4 py-1.5 rounded-full text-sm">
+                              {tech}
+                            </span>
+                          ))}
                         </div>
-                        <h3 className="text-4xl lg:text-6xl font-medium tracking-tight text-[#E1E0CC] mb-6">{project.title}</h3>
-                        <p className="text-lg lg:text-xl text-gray-400 font-light mb-8 leading-relaxed">
-                          {project.description}
-                        </p>
-                        
-                        {project.technologies && (
-                          <div className="flex gap-3 flex-wrap mb-10">
-                            {project.technologies.map(tech => (
-                              <span key={tech} className="border border-[#333] text-gray-300 px-4 py-1.5 rounded-full text-sm">
-                                {tech}
-                              </span>
-                            ))}
+                      )}
+
+                      {project.live_url && (
+                        <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center self-start gap-2 border border-[#333] hover:border-[#666] hover:bg-[#111] px-6 py-3 rounded-full transition-all text-sm font-medium">
+                          View Live Product <ExternalLink size={16} />
+                        </a>
+                      )}
+                    </div>
+
+                    {/* Browser Mockup */}
+                    <div className="h-full py-4 relative z-0">
+                      <BrowserFrame url={project.live_url || 'https://silava.com'}>
+                        {project.live_url ? (
+                          <iframe 
+                            src={project.live_url} 
+                            className="w-full h-full border-none bg-white relative z-0"
+                            title={project.title}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="text-gray-600 text-center p-8">
+                            <Code size={48} className="mx-auto mb-4 opacity-20" />
+                            <p className="text-xl font-medium mb-1 text-gray-400">{project.title}</p>
+                            <p className="text-sm">Live Interface Preview</p>
                           </div>
                         )}
-
-                        {project.live_url && (
-                          <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center self-start gap-2 border border-[#333] hover:border-[#666] hover:bg-[#111] px-6 py-3 rounded-full transition-all text-sm font-medium">
-                            View Live Product <ExternalLink size={16} />
-                          </a>
-                        )}
-                      </div>
-
-                      {/* Browser Mockup */}
-                      <div className="h-full py-4">
-                        <BrowserFrame url={project.live_url || 'https://silava.com'}>
-                          {project.live_url ? (
-                            <iframe 
-                              src={project.live_url} 
-                              className="w-full h-full border-none bg-white"
-                              title={project.title}
-                              loading="lazy"
-                            />
-                          ) : (
-                            <div className="text-gray-600 text-center p-8">
-                              <Code size={48} className="mx-auto mb-4 opacity-20" />
-                              <p className="text-xl font-medium mb-1 text-gray-400">{project.title}</p>
-                              <p className="text-sm">Live Interface Preview</p>
-                            </div>
-                          )}
-                        </BrowserFrame>
-                      </div>
-
+                      </BrowserFrame>
                     </div>
+
                   </div>
-                ))}
-              </motion.div>
+                </div>
+              ))}
+              
+              {/* Padding block at end to allow the last item to scroll fully left */}
+              <div className="w-[10vw] shrink-0" />
             </div>
           </div>
 
