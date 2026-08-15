@@ -54,7 +54,7 @@ export default function Hero() {
               <WordsPullUp 
                 text="SILAVA" 
                 showAsterisk={true}
-                className="text-[26vw] sm:text-[24vw] md:text-[22vw] lg:text-[20vw] xl:text-[19vw] 2xl:text-[20vw] font-medium leading-[0.85] tracking-[-0.07em]" 
+                className="text-[22vw] sm:text-[20vw] md:text-[18vw] lg:text-[16vw] xl:text-[15vw] 2xl:text-[16vw] font-medium leading-[0.85] tracking-[-0.07em]" 
                 style={{ color: '#E1E0CC' }}
               />
             </div>
