@@ -60,8 +60,8 @@ export default function Features() {
           
           {/* Card 1: Video */}
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="group relative rounded-2xl md:rounded-[2rem] overflow-hidden bg-[#101010] h-[320px] md:h-[400px] lg:h-auto"
@@ -84,8 +84,8 @@ export default function Features() {
           {cards.map((card, idx) => (
             <motion.div 
               key={card.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.15 * (idx + 1), ease: [0.22, 1, 0.36, 1] }}
               className="bg-[#212121] rounded-2xl md:rounded-[2rem] p-6 sm:p-8 flex flex-col h-full"
