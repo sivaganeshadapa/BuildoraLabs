@@ -20,12 +20,36 @@ export default function Hero() {
           muted 
           playsInline 
           className="absolute inset-0 w-full h-full object-cover"
-          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260405_170732_8a9ccda6-5cff-4628-b164-059c500a2b41.mp4"
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260808_112712_da9d53df-6d27-4b12-bdf6-aa9dc2622bdf.mp4"
         />
         
         {/* Overlays */}
-        <div className="absolute inset-0 noise-overlay opacity-[0.7] mix-blend-overlay pointer-events-none"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 pointer-events-none"></div>
+        <div className="absolute inset-0 noise-overlay opacity-[0.7] mix-blend-overlay pointer-events-none z-[2]"></div>
+        
+        {/* Side Letterbox Fade */}
+        <div 
+          className="absolute inset-0 pointer-events-none z-[1]"
+          style={{
+            background: `linear-gradient(to right, #000000 0%, transparent 15%, transparent 85%, #000000 100%)`
+          }}
+        ></div>
+
+        {/* Bottom Cinematic Fade */}
+        <div 
+          className="absolute inset-0 pointer-events-none z-[1]"
+          style={{
+            background: `linear-gradient(to bottom, 
+              rgba(0,0,0,0) 60%, 
+              rgba(0,0,0,.23) 79.6%, 
+              rgba(0,0,0,.45) 81.4%,
+              rgba(0,0,0,.75) 83.3%, 
+              rgba(0,0,0,.84) 85.2%, 
+              rgba(0,0,0,.888) 88%,
+              rgba(0,0,0,.905) 91%, 
+              rgba(0,0,0,.96) 95%, 
+              #000000 100%)`
+          }}
+        ></div>
 
         {/* Navbar Pill */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10">
@@ -65,7 +89,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 className="text-primary/70 text-xs sm:text-sm md:text-base max-w-sm leading-[1.2]"
               >
                 SILAVA is a premium digital product engineering studio bound not by templates or shortcuts, but by a passion to build scalable, high-performance technology for visionary creators and startups.
@@ -76,7 +100,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.8, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
                 className="group flex items-center gap-2 hover:gap-3 bg-primary rounded-full pl-6 pr-2 py-2 transition-all duration-300"
               >
                 <span className="text-black font-medium text-sm sm:text-base pr-2 group-hover:pr-4 transition-all duration-300">Start a Project</span>
