@@ -164,10 +164,10 @@ export default function ContactForm() {
                       className={inputClass}
                     >
                       <option value="">Select Budget...</option>
-                      <option value="<50k">Under ₹50k</option>
-                      <option value="50k-1L">₹50k - ₹1L</option>
-                      <option value="1L-5L">₹1L - ₹5L</option>
-                      <option value="5L+">₹5L+</option>
+                      <option value="<5k">Under ₹5k</option>
+                      <option value="5k-10k">₹5k - ₹10k</option>
+                      <option value="10k-25k">₹10k - ₹25k</option>
+                      <option value="25k+">₹25k+</option>
                     </select>
                   </div>
                 </div>
