@@ -28,7 +28,7 @@ export default function Footer() {
             <div>
               <h4 className="text-[#E1E0CC] mb-4 font-medium">Connect</h4>
               <ul className="list-none p-0 flex flex-col gap-2">
-                <li><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors text-sm">LinkedIn</a></li>
+                <li><a href="https://www.linkedin.com/in/sivaganeshadapa/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors text-sm">LinkedIn</a></li>
                 <li><a href="https://github.com/sivaganeshadapa" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors text-sm">GitHub</a></li>
               </ul>
             </div>
