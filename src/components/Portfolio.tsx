@@ -113,11 +113,20 @@ export default function Portfolio() {
                       {/* Browser Mockup */}
                       <div className="h-full py-4">
                         <BrowserFrame url={project.live_url || 'https://silava.com'}>
-                          <div className="text-gray-600 text-center p-8">
-                            <Code size={48} className="mx-auto mb-4 opacity-20" />
-                            <p className="text-xl font-medium mb-1 text-gray-400">{project.title}</p>
-                            <p className="text-sm">Live Interface Preview</p>
-                          </div>
+                          {project.live_url ? (
+                            <iframe 
+                              src={project.live_url} 
+                              className="w-full h-full border-none bg-white"
+                              title={project.title}
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="text-gray-600 text-center p-8">
+                              <Code size={48} className="mx-auto mb-4 opacity-20" />
+                              <p className="text-xl font-medium mb-1 text-gray-400">{project.title}</p>
+                              <p className="text-sm">Live Interface Preview</p>
+                            </div>
+                          )}
                         </BrowserFrame>
                       </div>
 
@@ -145,10 +154,19 @@ export default function Portfolio() {
                 
                 <div className="h-[300px] mb-8">
                   <BrowserFrame url={project.live_url || 'https://silava.com'}>
-                     <div className="text-gray-600 text-center p-6">
-                        <Code size={40} className="mx-auto mb-4 opacity-20" />
-                        <p className="text-lg font-medium text-gray-400">{project.title}</p>
-                      </div>
+                     {project.live_url ? (
+                        <iframe 
+                          src={project.live_url} 
+                          className="w-full h-full border-none bg-white"
+                          title={project.title}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="text-gray-600 text-center p-6">
+                          <Code size={40} className="mx-auto mb-4 opacity-20" />
+                          <p className="text-lg font-medium text-gray-400">{project.title}</p>
+                        </div>
+                      )}
                   </BrowserFrame>
                 </div>
 
