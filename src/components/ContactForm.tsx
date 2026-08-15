@@ -36,7 +36,7 @@ export default function ContactForm() {
         budget: formData.budget,
         description: formData.message,
         attachment_url: attachmentUrl,
-        status: 'new'
+        status: 'New'
       });
 
       setStatus('success');
