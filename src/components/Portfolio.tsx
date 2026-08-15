@@ -63,7 +63,7 @@ export default function Portfolio() {
   }, []);
 
   return (
-    <section id="work" className="bg-black text-[#E1E0CC]">
+    <section id="work" className="bg-black text-[#E1E0CC] min-h-[100vh]">
       <div className="max-w-[1600px] mx-auto px-6 pt-24 pb-8 md:pb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
