@@ -46,7 +46,7 @@ export default function Features() {
   ];
 
   return (
-    <section className="min-h-screen bg-black relative py-20 md:py-32 px-4 md:px-6">
+    <section id="services" className="min-h-screen bg-black relative py-20 md:py-32 px-4 md:px-6">
       <div className="absolute inset-0 bg-noise opacity-[0.15] mix-blend-overlay pointer-events-none"></div>
       
       <div className="max-w-[1600px] mx-auto relative z-10">

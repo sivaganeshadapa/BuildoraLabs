@@ -1,7 +1,15 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 
-export default function AnimatedLetter({ children, className = '' }: { children: string, className?: string }) {
+export default function AnimatedLetter({ 
+  children, 
+  className = '',
+  highlightWords = []
+}: { 
+  children: string; 
+  className?: string;
+  highlightWords?: string[];
+}) {
   const containerRef = useRef<HTMLParagraphElement>(null);
   
   const { scrollYProgress } = useScroll({
@@ -9,11 +17,23 @@ export default function AnimatedLetter({ children, className = '' }: { children:
     offset: ['start 0.8', 'end 0.2'],
   });
 
-  const chars = children.split('');
+  // Create an array of objects to track if a character is part of a highlighted word
+  const chars = children.split('').map(char => ({ char, isHighlight: false }));
+  
+  // Find and mark highlighted words
+  highlightWords.forEach(word => {
+    let startIndex = 0;
+    while ((startIndex = children.indexOf(word, startIndex)) > -1) {
+      for (let i = startIndex; i < startIndex + word.length; i++) {
+        chars[i].isHighlight = true;
+      }
+      startIndex += word.length;
+    }
+  });
 
   return (
     <p ref={containerRef} className={className}>
-      {chars.map((char, index) => {
+      {chars.map((item, index) => {
         const charProgress = index / chars.length;
         const opacity = useTransform(
           scrollYProgress,
@@ -22,8 +42,12 @@ export default function AnimatedLetter({ children, className = '' }: { children:
         );
 
         return (
-          <motion.span key={index} style={{ opacity }}>
-            {char}
+          <motion.span 
+            key={index} 
+            style={{ opacity }}
+            className={item.isHighlight ? 'text-white font-bold' : ''}
+          >
+            {item.char}
           </motion.span>
         );
       })}

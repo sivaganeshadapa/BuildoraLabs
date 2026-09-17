@@ -104,8 +104,14 @@ export default function Portfolio() {
           <div className="hidden md:block w-full overflow-hidden mb-32">
             <div 
               ref={carouselRef}
-              className="flex gap-16 px-6 md:px-12 overflow-x-auto snap-x snap-mandatory pb-12"
-              style={{ scrollBehavior: 'smooth', msOverflowStyle: 'none', scrollbarWidth: 'none' }}
+              className="flex gap-16 overflow-x-auto snap-x snap-mandatory pb-12"
+              style={{ 
+                scrollBehavior: 'smooth', 
+                msOverflowStyle: 'none', 
+                scrollbarWidth: 'none',
+                paddingLeft: 'max(24px, calc((100vw - 1600px) / 2 + 24px))',
+                paddingRight: 'max(24px, calc((100vw - 1600px) / 2 + 24px))'
+              }}
             >
               {/* This style block completely hides the scrollbar across browsers while keeping functionality */}
               <style>{`
@@ -166,9 +172,6 @@ export default function Portfolio() {
                   </div>
                 </div>
               ))}
-              
-              {/* Padding block at end to allow the last item to scroll fully left */}
-              <div className="w-[10vw] shrink-0" />
             </div>
           </div>
 
