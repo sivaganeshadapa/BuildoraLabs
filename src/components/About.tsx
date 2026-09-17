@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import WordsPullUpMultiStyle from './WordsPullUpMultiStyle';
 import AnimatedLetter from './AnimatedLetter';
 
@@ -24,9 +25,15 @@ export default function About() {
           <AnimatedLetter className="text-[#DEDBC8] text-sm sm:text-base md:text-lg leading-relaxed text-justify sm:text-center">
             SILAVA is a premium digital product engineering studio founded by Siva Ganesh Adapa. With a deep foundation in full-stack development, AI, and embedded systems, we specialize in building complex, hyper-local solutions that scale.
           </AnimatedLetter>
-          <AnimatedLetter className="text-gray-400 text-xs sm:text-sm md:text-base leading-relaxed text-justify sm:text-center">
-            From architecting the open OOH advertising network <strong>FlexConnect</strong>, to building the AI-powered electrical design platform <strong>SmartWiring AI</strong>, we don't just build websites—we engineer complete end-to-end ecosystems that drive real-world impact.
-          </AnimatedLetter>
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-gray-400 text-xs sm:text-sm md:text-base leading-relaxed text-justify sm:text-center"
+          >
+            From architecting the open OOH advertising network <strong className="text-gray-300">FlexConnect</strong>, to building the AI-powered electrical design platform <strong className="text-gray-300">SmartWiring AI</strong>, we don't just build websites—we engineer complete end-to-end ecosystems that drive real-world impact.
+          </motion.p>
         </div>
 
       </div>
