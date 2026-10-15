@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { motion } from 'framer-motion';
-import { submitLead, uploadAttachment } from '../lib/supabase/queries';
 import { ArrowRight, CheckCircle, AlertCircle, Paperclip } from 'lucide-react';
 import { fadeUp } from '../lib/animations';
 
@@ -24,20 +23,60 @@ export default function ContactForm() {
     setErrorMessage('');
 
     try {
-      let attachmentUrl = null;
+      let attachmentBase64: string | null = null;
+      let attachmentName: string | null = null;
+
       if (file) {
-        attachmentUrl = await uploadAttachment(file);
+        attachmentName = file.name;
+        const reader = new FileReader();
+        attachmentBase64 = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => {
+            const res = reader.result as string;
+            resolve(res.split(',')[1] || '');
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
       }
 
-      await submitLead({
+      // 1. Submit to Netlify Serverless Function (Resend Email directly to flexconnect.in@gmail.com)
+      const functionPromise = fetch('/.netlify/functions/submit-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          projectType: formData.projectType,
+          budget: formData.budget,
+          message: formData.message,
+          attachmentName,
+          attachmentBase64,
+        }),
+      }).catch(err => {
+        console.warn('Netlify function notification notice:', err);
+        return null;
+      });
+
+      // 2. Submit to Netlify native forms (stored in Netlify dashboard backup)
+      const formBody = new URLSearchParams({
+        'form-name': 'contact',
         name: formData.name,
         email: formData.email,
-        project_type: formData.projectType,
+        projectType: formData.projectType,
         budget: formData.budget,
-        description: formData.message,
-        attachment_url: attachmentUrl,
-        status: 'New'
+        message: formData.message,
+      }).toString();
+
+      const netlifyFormPromise = fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formBody,
+      }).catch(err => {
+        console.warn('Netlify form submission notice:', err);
+        return null;
       });
+
+      await Promise.allSettled([functionPromise, netlifyFormPromise]);
 
       setStatus('success');
       setFormData({ name: '', email: '', projectType: 'website', budget: '', message: '' });
@@ -100,7 +139,18 @@ export default function ContactForm() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="relative z-10">
+              <form 
+                name="contact" 
+                method="POST" 
+                data-netlify="true" 
+                data-netlify-honeypot="bot-field"
+                onSubmit={handleSubmit} 
+                className="relative z-10"
+              >
+                <input type="hidden" name="form-name" value="contact" />
+                <p className="hidden" aria-hidden="true">
+                  <label>Don’t fill this out if you're human: <input name="bot-field" /></label>
+                </p>
                 {status === 'error' && (
                   <div className="p-4 bg-red-900/10 border border-red-500/50 rounded-lg mb-6 flex items-center gap-3 text-red-400">
                     <AlertCircle size={20} />

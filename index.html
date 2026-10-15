@@ -32,8 +32,17 @@
     <!-- Replace this with a real image URL when you have a social banner designed -->
     <meta property="twitter:image" content="https://silava.netlify.app/favicon.svg" />
   </head>
-  <body>
     <div id="root"></div>
+
+    <!-- Netlify Forms Build Hook (Zero-Database Form Handling) -->
+    <form name="contact" netlify netlify-honeypot="bot-field" hidden>
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="text" name="projectType" />
+      <input type="text" name="budget" />
+      <textarea name="message"></textarea>
+    </form>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

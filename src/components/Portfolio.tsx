@@ -1,10 +1,7 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { getFeaturedProjects } from '../lib/supabase/queries';
-import type { Database } from '../lib/supabase/types';
+import { featuredProjects, type ProjectItem } from '../data/projects';
 import { ExternalLink, Code, ChevronLeft, ChevronRight } from 'lucide-react';
-
-type Project = Database['public']['Tables']['projects']['Row'];
 
 function BrowserFrame({ url, children }: { url: string, children: React.ReactNode }) {
   return (
@@ -31,8 +28,8 @@ function BrowserFrame({ url, children }: { url: string, children: React.ReactNod
 }
 
 export default function Portfolio() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [projects] = useState<ProjectItem[]>(featuredProjects);
+  const loading = false;
   
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -47,20 +44,6 @@ export default function Portfolio() {
       carouselRef.current.scrollBy({ left: window.innerWidth * 0.7, behavior: 'smooth' });
     }
   };
-
-  useEffect(() => {
-    async function loadProjects() {
-      try {
-        const data = await getFeaturedProjects();
-        setProjects(data);
-      } catch (err) {
-        console.error('Failed to load projects:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadProjects();
-  }, []);
 
   return (
     <section id="work" className="bg-black text-[#E1E0CC] min-h-[100vh]">

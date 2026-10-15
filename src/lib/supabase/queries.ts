@@ -1,5 +1,6 @@
 import { supabase } from './client';
 import type { Database } from './types';
+import { featuredProjects } from '../../data/projects';
 
 type Project = Database['public']['Tables']['projects']['Row'];
 type Service = Database['public']['Tables']['services']['Row'];
@@ -8,26 +9,38 @@ type FAQ = Database['public']['Tables']['faq']['Row'];
 type LeadInsert = Database['public']['Tables']['leads']['Insert'];
 
 export async function getProjects() {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('status', 'published')
-    .order('year', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('status', 'published')
+      .order('year', { ascending: false });
 
-  if (error) throw error;
-  return data as Project[];
+    if (!error && data && data.length > 0) {
+      return data as Project[];
+    }
+  } catch (err) {
+    console.warn('Database query bypassed, using static projects data.');
+  }
+  return featuredProjects as unknown as Project[];
 }
 
 export async function getFeaturedProjects() {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('status', 'published')
-    .eq('featured', true)
-    .order('year', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('status', 'published')
+      .eq('featured', true)
+      .order('year', { ascending: false });
 
-  if (error) throw error;
-  return data as Project[];
+    if (!error && data && data.length > 0) {
+      return data as Project[];
+    }
+  } catch (err) {
+    console.warn('Database query bypassed, using static projects data.');
+  }
+  return featuredProjects as unknown as Project[];
 }
 
 export async function getServices() {
