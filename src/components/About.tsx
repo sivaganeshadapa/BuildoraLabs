@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import WordsPullUpMultiStyle from './WordsPullUpMultiStyle';
 import AnimatedLetter from './AnimatedLetter';
 
